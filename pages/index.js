@@ -1,6 +1,6 @@
-import Head from "next/head";
-
-export default function Home({ shows }) {
+import Head from 'next/head';
+import NextImage from 'next/image';
+export default function Home({ shows, currentTime }) {
   return (
     <div className="container">
       <Head>
@@ -14,12 +14,12 @@ export default function Home({ shows }) {
         <p className="description">
           Get started by editing <code className="code">pages/index.js</code>
         </p>
-
+        <p className="description">The time is {currentTime}</p>
         <div className="grid">
           {shows?.map((show) => (
             <a className="card" key={show.name}>
               <div className="image">
-                <img
+                <NextImage
                   src={`https://image.tmdb.org/t/p/original/${show.poster_path}`}
                   alt={show.name}
                   width={100}
@@ -36,4 +36,19 @@ export default function Home({ shows }) {
       </main>
     </div>
   );
+}
+
+//export const getStaticProps = async () => {
+export async function getServerSideProps() {
+  const res = await fetch(
+    'https://api.themoviedb.org/3/tv/popular?api_key=3c81d3d434a13d39edaea832df6550a3&page=1'
+  );
+  const showsRes = await res.json();
+  const currentTime = new Date().toISOString();
+  return {
+    props: {
+      shows: showsRes.results,
+      currentTime,
+    },
+  };
 }
